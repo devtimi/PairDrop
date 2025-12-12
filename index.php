@@ -1,12 +1,17 @@
 <?php
 /**
- * PairDrop Rooms - Multi-user PHP Version
- * * SETUP:
- * 1. Upload this file to any folder, for example /drop/index.php
- * 2. Open https://yourdomain.com/drop/
+ * PairDrop Rooms - The GitHub fork with additional features
+ * <https://github.com/devtimi/PairDrop>
+ *
+ * Copyright (c) 2025, PairDrop Rooms <https://pairdrop.org>
+ * Copyright (c) 2025, Tim Parnell <https://timi.me>
  * 
- * Donation link
- * https://www.paypal.com/donate/?hosted_button_id=544BSHM8VP2D8
+ * # SETUP
+ *   1. Upload this file to any folder, for example /drop/index.php
+ *   2. Open https://yourdomain.com/drop/
+ * 
+ * # LICENSE
+ * <https://github.com/devtimi/PairDrop/raw/refs/heads/main/LICENSE>
  */
 
 // ═══════════════════════════════════════════════════════════
@@ -17,14 +22,12 @@ define('MAX_FILE_SIZE', 50 * 1024 * 1024);
 define('AUTO_DELETE_HOURS', 168); //168 hours = 1 week
 define('MIN_ROOM_LENGTH', 4);
 define('MAX_ROOM_LENGTH', 32);
-define('DEFAULT_THEME', 'dark'); // Layout option: 'light' (default) o 'dark'
 // ═══════════════════════════════════════════════════════════
 
 // Error reporting for debugging (disable in production)
 // error_reporting(E_ALL); ini_set('display_errors', 1);
 
-// Theme Selection Logic
-$isDark = defined('DEFAULT_THEME') && strtolower(DEFAULT_THEME) === 'dark';
+// Theme is automatically detected by CSS
 
 // Light Mode (Ahrefs style)
 $lightThemeVars = [
@@ -56,10 +59,15 @@ $darkThemeVars = [
     'modal-bg-shade' => '#2a2a2a', // Used for modal accents
 ];
 
-$themeVars = $isDark ? $darkThemeVars : $lightThemeVars;
-$cssVars = '';
-foreach ($themeVars as $name => $value) {
-    $cssVars .= "--$name:$value;";
+// Prepare the CSS strings, we need both so that Light / Dark
+// can be determined by the browser. It's 2025.
+$cssLightVars = '';
+foreach ($lightThemeVars as $name => $value) {
+    $cssLightVars .= "--$name:$value;";
+}
+$cssDarkVars = '';
+foreach ($darkThemeVars as $name => $value) {
+    $cssDarkVars .= "--$name:$value;";
 }
 
 // Start session
@@ -292,11 +300,18 @@ $inRoom = inRoom();
     <title><?= $inRoom ? "Room: $room" : 'PairDrop' ?></title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📤</text></svg>">
     <style>
-        /* NUOVO STILE ISPIRATO AD AHREFS */
-        :root{
-            /* Variabili CSS definite dinamicamente in PHP per supportare Light/Dark Mode */
-            <?= $cssVars ?>
+        /* Default light mode */
+        :root {
+          <?= $cssLightVars ?>
         }
+        
+        /* Dark mode overrides */
+        @media (prefers-color-scheme: dark) {
+          :root {
+            <?= $cssDarkVars ?>
+          }
+        }
+
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text-color)}
         .container{max-width:580px;margin:0 auto;padding:24px 16px}
