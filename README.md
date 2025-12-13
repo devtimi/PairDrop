@@ -6,10 +6,18 @@
 
 The script requires no database, complex dependencies, or elaborate configuration. A single `index.php` file handles everything, from creating *private rooms* to managing uploads and downloads.
 
+#### Table of Contents
+
+- [Why choose PairDrop Rooms?](#why-choose-pairdrop-rooms)
+- [What is different here?](#what-is-different-here)
+- [Quick Installation Guide](#quick-installation-guide)
+- [Requirements](#requirements)
+- [Live Demo](#live-demo)
+
 ## Why choose PairDrop Rooms?
 
 ✅ **Maximum Privacy**  
-Host the script and files on your server. Complete control over your data and files with no third-parties.
+Complete control over your data and files with no third-parties. The script and files are on *your* server.
 
 🚀 **Fast and Lightweight**  
 Purely simple PHP for minimal execution time and low server load. No frameworks, **no database**.
@@ -20,14 +28,27 @@ Share files in unique, private rooms. Only those with the room code can access a
 ⚫ **Modern, Mobile Friendly Design**  
 Features a modern and clean design that is **mobile-friendly** featuring both Light Mode and Dark Mode themes.
 
-## Live Demo
+## What is different here?
 
-Until I hear from the original author, navigate to the [PairDrop.org](https://pairdrop.org) website to find the live demo links.
+This is a fork of [PairDrop.org](https://pairdrop.org/) with some additional changes / features. The original author of PairDrop.org, whose name is unknown, calls the software Open-Source in several locations, but left no contact information.
 
-## Requirements
+Please reach out, let's collaborate! My email address is on my website. \<[https://timi.me](https://timi.me)\> ✌️
 
-- PHP 7.4+
-- Write permissions
+---
+
+🔐 **Private Mode Setting**  
+When enabled, a room code directory must already exist on the server for the visitor to be allowed in. The script will no longer automatically create room directories, they must already exist (i.e. *you* create them).
+
+This functionality offers a more private space to quickly and easily share files between colleagues.
+
+Change this setting to `false`:
+
+```php
+define('ALLOW_CREATE_ROOMS', true);
+```
+
+🐞 **Improved Error Handling**  
+This fork of PairDrop Rooms handles upload errors a little better. It's still bad, a simple JavaScript `alert();`, but it used to just silently fail.
 
 ## Quick Installation Guide
 
@@ -36,13 +57,16 @@ Assuming you know how to use a PHP script, installation and use is super simple.
 1. Adjust settings in the `CONFIGURATION` section of `index.php`
 2. Create a directory for PairDrop Rooms on your server (e.g. `/drop/`)  
 <small style="color:#f00">Ensure PHP has write permissions for this directory</small>  
-3. Upload the confiugred `index.php` into the `/drop/` folder
+3. Upload the configured `index.php` into the `/drop/` folder
 4. Done!
 
-Open your browser and navigate to the URL where you created the directory in Step 1. Enter a room code and start sharing files!
+Open your browser and navigate to the URL where you created the directory in Step 2. Enter a room code and start sharing files!
 
-## What is this repository?
+## Requirements
 
-This is a fork of [PairDrop.org](https://pairdrop.org/) with some additional changes / features. The original author of PairDrop.org calls the software Open-Source in several locations, but left absolutely no contact information on the website. I welcome contact from the original author, whose name is unknown.
+- PHP 7.4+
+- Write permissions
 
-In the spirit of Open-Source I wanted to share my modifications, so I've done so with this "fork". I have also removed references to calling this functionality "AirDrop-like" because it's not even close and there's [AirDrop.net](https://airdrop.net) for that.
+## Live Demo
+
+Until I hear from the original author, navigate to the [PairDrop.org](https://pairdrop.org) website to find the live demo links. Keep in mind that their live demo does not [feature this fork's changes](#what-is-different-here).
