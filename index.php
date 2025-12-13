@@ -460,6 +460,7 @@ $inRoom = inRoom();
             background: var(--bg); /* Usa bg per un contrasto sottile */
             color: var(--sub-text);
         }
+        .modal-body > div > p { margin-bottom: 0.5em; }
         
         
     </style>
@@ -751,7 +752,7 @@ $inRoom = inRoom();
 
 
 <div class="footer-terms">
-    Powered by <a href="https://github.com/devtimi/PairDrop-Rooms" target="_blank">PairDrop Rooms</a>. By using this service, you agree to the <a href="#" id="openTerms">Terms of Service</a>.
+    Powered by <a href="https://github.com/devtimi/PairDrop-Rooms" target="_blank">PairDrop Rooms</a>. By using this website, you agree to the <a href="#" id="openTerms">Terms of Service</a>.
 </div>
 
 <div id="termsModal" class="modal">
@@ -771,20 +772,14 @@ $inRoom = inRoom();
 
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
 
-        <h3>Full Legal Agreement</h3>
-        <div style="height: 250px; overflow-y: auto; padding-right: 10px; border: 1px solid var(--border); padding: 10px; border-radius: 6px; background: var(--bg); font-size: 0.85em; text-align: justify; color: var(--sub-text);">
+        <h3>Legal Agreements</h3>
+        <div style="height: 250px; overflow-y: auto; padding-right: 10px; border: 1px solid var(--border); padding: 10px; border-radius: 6px; background: var(--bg); font-size: 0.85em; color: var(--sub-text);">
             <p><strong>1. Nature of Service:</strong> You acknowledge that this Service is designed exclusively for the temporary transfer of files. It is not a cloud storage or backup service. Files are automatically deleted. We guarantee no long-term retention.</p>
-            
-            <p><strong>2. User Content:</strong> You strictly agree NOT to upload content that infringes on copyright, contains malware, is illegal, or promotes illegal acts (including CSAM). We reserve the right to remove any content without notice.</p>
-            
+            <p><strong>2. User Content:</strong> You strictly agree NOT to upload content that infringes on copyright, contains malware, is illegal, or promotes illegal acts. We reserve the right to remove any content without notice.</p>
             <p><strong>3. Room Security:</strong> Access is controlled via "Room Codes" chosen by the User. Anyone with the code can access the files. It is your sole responsibility to choose a complex code. The Operator is not responsible for data breaches resulting from weak or shared codes.</p>
-            
             <p><strong>4. Indemnification:</strong> You agree to indemnify and hold the Operator harmless from any liabilities, losses, damages, or costs (including legal fees) arising from your Content, your use of the Service, or any violation of these terms.</p>
-            
             <p><strong>5. Limitation of Liability:</strong> In no event will the Operator be liable for any indirect, incidental, or consequential damages (including lost profits or data loss). The Service is provided "AS IS" without any warranties.</p>
-            
-            <p><strong>6. Acceptance:</strong> By accessing and using the Website, you acknowledge that you have read and agree to be bound by this Agreement. Script provided by <a href="https://www.pairdrop.org/">PairDrop.org</a></p>
-            
+            <p><strong>6. Acceptance:</strong> By accessing and using the Website, you acknowledge that you have read and agree to be bound by this Agreement.</p>
             <p><strong>7. Privacy & Cookies:</strong> This service uses a single technical session cookie solely to maintain your connection to the room. No personal data, IP addresses, or tracking cookies are stored for analytics or advertising purposes. This cookie is strictly necessary for the service to function.</p>
         </div>
     </div>
