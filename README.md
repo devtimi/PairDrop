@@ -8,16 +8,16 @@ The script requires no database, complex dependencies, or elaborate configuratio
 
 ## Why choose PairDrop Rooms?
 
-- ✅ **Maximum Privacy**  
+✅ **Maximum Privacy**  
 Host the script and files on your server. Complete control over your data and files with no third-parties.
 
-- 🚀 **Fast and Lightweight**  
+🚀 **Fast and Lightweight**  
 Purely simple PHP for minimal execution time and low server load. No frameworks, **no database**.
    
-- 🔑 **Private Code-Protected Rooms**  
+🔑 **Private Code-Protected Rooms**  
 Share files in unique, private rooms. Only those with the room code can access and view the files.
 
-- ⚫ **Modern, Mobile Friendly Design**  
+⚫ **Modern, Mobile Friendly Design**  
 Features a modern and clean design that is **mobile-friendly** featuring both Light Mode and Dark Mode themes.
 
 ## Live Demo
