@@ -222,6 +222,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         }
     }
     
+    // Check if directory is writable
+    if (!is_writable($roomDir)) {
+        echo json_encode(['error' => 'Room folder is not writable.']);
+        exit;
+    }
+    
     $file = $_FILES['file'];
     
     if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -620,9 +626,25 @@ $inRoom = inRoom();
                         }
                     };
                     xhr.onload = () => { 
-                        progress.style.display = 'none'; 
-                        loadFiles(); 
-                        fileInput.value = ''; 
+                        progress.style.display = 'none';
+                        if (xhr.status === 401) {
+                            window.location.href = '?leave';
+                            return;
+                        } else if (xhr.status === 200) {
+                            try {
+                                const response = JSON.parse(xhr.responseText);
+                                if (response.success) {
+                                    loadFiles(); 
+                                    fileInput.value = '';
+                                } else {
+                                    alert(response.error || 'Upload failed');
+                                }
+                            } catch(e) {
+                                alert('Invalid response from server');
+                            }
+                        } else {
+                            alert('Upload failed (HTTP ' + xhr.status + ')');
+                        }
                     };
                     xhr.onerror = () => { 
                         alert('Upload failed'); 
