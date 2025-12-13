@@ -48,7 +48,7 @@ define('ALLOW_CREATE_ROOMS', true);
 ```
 
 🐞 **Improved Error Handling**  
-This fork of PairDrop Rooms handles upload errors a little better. It's still bad, a simple JavaScript `alert();`, but it used to just silently fail.
+This fork of PairDrop Rooms handles upload errors a little better. It's still bad, a simple JavaScript `alert();`, but it used to just silently fail. The script will now also tell you about common configuration errors before operation, reducing silent failures.
 
 ## Quick Installation Guide
 

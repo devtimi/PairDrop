@@ -75,9 +75,6 @@ foreach ($darkThemeVars as $name => $value) {
     $cssDarkVars .= "--$name:$value;";
 }
 
-// Check php.ini
-performSafetyCheck();
-
 // Start session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -208,26 +205,24 @@ function requireRoom() {
     }
 }
 
-function performSafetyCheck() {
+function checkConfigSizes(&$errMsg = null): bool {
 	// Normalize php.ini setting
 	$iniUploadLimit = iniSizeToBytes(ini_get('upload_max_filesize'));
 
 	// Check it's big enough for our local setting
-	if ($iniUploadLimit < MAX_FILE_SIZE) {
+	if ($iniUploadLimit >= MAX_FILE_SIZE) {
+		return true;
+		
+	} else {
 		$errMsg = 'PHP upload_max_filesize (' . ini_get('upload_max_filesize') .
 			') is smaller than the defined MAX_FILE_SIZE (' . 
 			round(MAX_FILE_SIZE/1024/1024) . 'MB)';
-			
-		// Logit
-		trigger_error($errMsg, E_USER_WARNING);
 		
-		// Fail to the user
-		header('Content-Type: application/json');
-        http_response_code(401);
-        echo json_encode(['error' => $errMsg]);
-        exit;
-        
+		trigger_error($errMsg, E_USER_WARNING);
+		return false;
+		
 	}
+	
 }
 
 function iniSizeToBytes(string $value): int {
@@ -470,6 +465,13 @@ $inRoom = inRoom();
         .drop-zone p{color:var(--sub-text);font-size:.95em}
         .drop-zone .size-hint{font-size:.8em;margin-top:6px;color:var(--sub-text)}
         
+        .error-box{border:2px solid var(--danger);border-radius:16px;padding:44px 20px;text-align:center;margin-bottom:24px;background:rgba(239,68,68,0.1);color:var(--danger)}
+        @media (prefers-color-scheme: dark) {
+            .error-box{background:rgba(255,85,85,0.15)}
+        }
+        .error-box p{margin:0;font-size:.95em;color:var(--danger)}
+        .error-box p b{font-weight:600}
+        
         .progress{display:none;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow: 0 1px 3px rgba(0,0,0,0.05)}
         .progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
         .progress-fill{height:100%;background:var(--primary);width:0%;transition:width .2s}
@@ -617,6 +619,7 @@ $inRoom = inRoom();
             </div>
         </div>
         
+        <?php $errMsg = null; if (checkConfigSizes($errMsg)): ?>
         <div class="drop-zone" id="dropZone">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
@@ -631,6 +634,12 @@ $inRoom = inRoom();
             <p class="progress-text" id="progressText">Uploading...</p>
         </div>
         
+        <?php else: ?>
+        <div class="error-box">
+        	<p><?= $errMsg ?></p>
+        </div>
+        <?php endif; ?>
+        
         <div class="section-header">
             <span class="section-title">Files in this room</span>
             <span class="file-count" id="fileCount"></span>
@@ -642,6 +651,7 @@ $inRoom = inRoom();
 				Files are automatically deleted after <?= $autoDeleteTime . " " . $autoDeleteUnit ?>
 			</div>
         <?php endif; ?>
+        
     </div>
 
     <script>
@@ -665,69 +675,71 @@ $inRoom = inRoom();
             btn.classList.add('copied');
             setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
         }
-
-        dropZone.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', e => uploadFiles(e.target.files));
         
-        ['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('dragover'); }));
-        ['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('dragover'); }));
-        dropZone.addEventListener('drop', e => uploadFiles(e.dataTransfer.files));
+        if (dropZone && fileInput && progress && progressFill && progressText) {
+			dropZone.addEventListener('click', () => fileInput.click());
+			fileInput.addEventListener('change', e => uploadFiles(e.target.files));
+		
+			['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropZone.classList.add('dragover'); }));
+			['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dropZone.classList.remove('dragover'); }));
+			dropZone.addEventListener('drop', e => uploadFiles(e.dataTransfer.files));
 
-        async function uploadFiles(files) {
-            for (const file of files) {
-                progress.style.display = 'block';
-                progressFill.style.width = '0%';
-                progressText.textContent = 'Uploading: ' + file.name;
+			async function uploadFiles(files) {
+				for (const file of files) {
+					progress.style.display = 'block';
+					progressFill.style.width = '0%';
+					progressText.textContent = 'Uploading: ' + file.name;
 
-                const fd = new FormData();
-                fd.append('file', file);
+					const fd = new FormData();
+					fd.append('file', file);
 
-                try {
-                    const xhr = new XMLHttpRequest();
-                    xhr.upload.onprogress = e => {
-                        if (e.lengthComputable) {
-                            const pct = (e.loaded / e.total) * 100;
-                            progressFill.style.width = pct + '%';
-                            progressText.textContent = file.name + ' — ' + Math.round(pct) + '%';
-                        }
-                    };
-                    xhr.onload = () => { 
-                        progress.style.display = 'none';
-                        if (xhr.status === 401) {
-                            window.location.href = '?leave';
-                            return;
-                        } else if (xhr.status === 200) {
-                            try {
-                                const response = JSON.parse(xhr.responseText);
-                                if (response.success) {
-                                    loadFiles(); 
-                                    fileInput.value = '';
-                                } else {
-                                    alert(response.error || 'Upload failed');
-                                }
-                            } catch(e) {
-                                alert('Invalid response from server');
-                            }
-                        } else if (xhr.status === 413) {
-                        	alert('Upload failed: file too large. ' +
-                        		'Max <?= round(MAX_FILE_SIZE/1024/1024) ?>MB per file');
-                        	
-                        } else {
-                            alert('Upload failed (HTTP ' + xhr.status + ')');
-                        }
-                    };
-                    xhr.onerror = () => { 
-                        alert('Upload failed'); 
-                        progress.style.display = 'none'; 
-                    };
-                    xhr.open('POST', window.location.href);
-                    xhr.send(fd);
-                } catch(e) {
-                    alert('Upload error');
-                    progress.style.display = 'none';
-                }
-            }
-        }
+					try {
+						const xhr = new XMLHttpRequest();
+						xhr.upload.onprogress = e => {
+							if (e.lengthComputable) {
+								const pct = (e.loaded / e.total) * 100;
+								progressFill.style.width = pct + '%';
+								progressText.textContent = file.name + ' — ' + Math.round(pct) + '%';
+							}
+						};
+						xhr.onload = () => { 
+							progress.style.display = 'none';
+							if (xhr.status === 401) {
+								window.location.href = '?leave';
+								return;
+							} else if (xhr.status === 200) {
+								try {
+									const response = JSON.parse(xhr.responseText);
+									if (response.success) {
+										loadFiles(); 
+										fileInput.value = '';
+									} else {
+										alert(response.error || 'Upload failed');
+									}
+								} catch(e) {
+									alert('Invalid response from server');
+								}
+							} else if (xhr.status === 413) {
+								alert('Upload failed: file too large. ' +
+									'Max <?= round(MAX_FILE_SIZE/1024/1024) ?>MB per file');
+							
+							} else {
+								alert('Upload failed (HTTP ' + xhr.status + ')');
+							}
+						};
+						xhr.onerror = () => { 
+							alert('Upload failed'); 
+							progress.style.display = 'none'; 
+						};
+						xhr.open('POST', window.location.href);
+						xhr.send(fd);
+					} catch(e) {
+						alert('Upload error');
+						progress.style.display = 'none';
+					}
+				}
+			}
+		}
 
         async function loadFiles() {
             try {
