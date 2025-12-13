@@ -205,24 +205,30 @@ function requireRoom() {
     }
 }
 
-function checkConfigSizes(&$errMsg = null): bool {
-	// Normalize php.ini setting
+function checkConfig(&$errMsg = null): bool {
+	// Check for known errors and return a boolean "can upload" status
+	
+	// Check room directory exists and is writable
+	global $roomDir;
+	if (!$roomDir || !is_writable($roomDir)) {
+		$errMsg = "Room folder is not writable.";
+		trigger_error($errMsg, E_USER_WARNING);
+		return false;
+	}
+	
+	// Check the php.ini setting is big enough for our local setting
 	$iniUploadLimit = iniSizeToBytes(ini_get('upload_max_filesize'));
-
-	// Check it's big enough for our local setting
-	if ($iniUploadLimit >= MAX_FILE_SIZE) {
-		return true;
-		
-	} else {
+	if ($iniUploadLimit < MAX_FILE_SIZE) {
 		$errMsg = 'PHP upload_max_filesize (' . ini_get('upload_max_filesize') .
 			') is smaller than the defined MAX_FILE_SIZE (' . 
 			round(MAX_FILE_SIZE/1024/1024) . 'MB)';
 		
 		trigger_error($errMsg, E_USER_WARNING);
 		return false;
-		
 	}
 	
+	// All checks passed
+	return true;
 }
 
 function iniSizeToBytes(string $value): int {
@@ -619,7 +625,7 @@ $inRoom = inRoom();
             </div>
         </div>
         
-        <?php $errMsg = null; if (checkConfigSizes($errMsg)): ?>
+        <?php $errMsg = null; if (checkConfig($errMsg)): ?>
         <div class="drop-zone" id="dropZone">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
