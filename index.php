@@ -1,7 +1,7 @@
 <?php
 /**
  * PairDrop Rooms - The GitHub fork with additional features
- * <https://github.com/devtimi/PairDrop>
+ * <https://github.com/devtimi/PairDrop-Rooms>
  *
  * Copyright (c) 2025, PairDrop Rooms <https://pairdrop.org>
  * Copyright (c) 2025, Tim Parnell <https://timi.me>
@@ -11,7 +11,7 @@
  *   2. Open https://yourdomain.com/drop/
  * 
  * # LICENSE
- * <https://github.com/devtimi/PairDrop/raw/refs/heads/main/LICENSE>
+ * <https://github.com/devtimi/PairDrop-Rooms/raw/refs/heads/main/LICENSE>
  */
 
 // ═══════════════════════════════════════════════════════════
